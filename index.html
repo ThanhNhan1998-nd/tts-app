@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>TTS AI PRO</title>
+
     <style>
         body {
             font-family: Arial;
@@ -57,23 +58,24 @@
         }
     </style>
 </head>
+
 <body>
 
 <h1>🎤 TTS AI PRO</h1>
 
 <div class="card">
+
     <form id="ttsForm">
-        <textarea name="text" placeholder="Nhập văn bản..."></textarea><br>
+        <textarea name="text" placeholder="Nhập văn bản..." required></textarea><br>
 
         <select name="voice">
             <option value="vi-VN-HoaiMyNeural">Nữ miền Bắc</option>
             <option value="vi-VN-NamMinhNeural">Nam miền Bắc</option>
-            <option value="vi-VN-HoaiMyNeural">Nữ miền Nam (giọng gần đúng)</option>
         </select><br>
 
         <label>Tốc độ:</label><br>
-        <input type="range" name="rate" min="-50%" max="50%" value="0%" 
-        oninput="rateValue.innerText=this.value">
+        <input type="range" name="rate" min="-50" max="50" value="0"
+               oninput="rateValue.innerText=this.value + '%'">
         <span id="rateValue">0%</span><br>
 
         <button type="submit">🔊 Tạo giọng nói</button>
@@ -81,7 +83,9 @@
 
     <audio id="player" controls style="display:none;"></audio>
 
+    <br>
     <a id="download" href="#">⬇️ Tải file</a>
+
 </div>
 
 <script>
@@ -97,17 +101,20 @@ document.getElementById("ttsForm").addEventListener("submit", async function(e){
 
     let data = await res.json();
 
+    // lấy file name từ backend
     let fileName = data.audio.split("/").pop();
-let audioUrl = "/audio/" + fileName;
+    let audioUrl = data.audio;
 
+    // play audio
     let player = document.getElementById("player");
     player.src = audioUrl;
     player.style.display = "block";
     player.play();
 
+    // download link
     let download = document.getElementById("download");
     download.href = "/download/" + fileName;
-    download.style.display = "block";
+    download.style.display = "inline-block";
 });
 </script>
 
