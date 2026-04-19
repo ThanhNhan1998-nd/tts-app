@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TTS AI PRO</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            width: 80%;
+        }
+
+        textarea {
+            width: 90%;
+            height: 120px;
+            border-radius: 10px;
+            padding: 10px;
+            border: none;
+        }
+
+        select, input, button {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button {
+            background: #00c6ff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #00aaff;
+        }
+
+        audio {
+            width: 90%;
+            margin-top: 20px;
+        }
+
+        #download {
+            display: none;
+            margin-top: 10px;
+            color: #00ffcc;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🎤 TTS AI PRO</h1>
+
+<div class="card">
+    <form id="ttsForm">
+        <textarea name="text" placeholder="Nhập văn bản..."></textarea><br>
+
+        <select name="voice">
+            <option value="vi-VN-HoaiMyNeural">Nữ miền Bắc</option>
+            <option value="vi-VN-NamMinhNeural">Nam miền Bắc</option>
+            <option value="vi-VN-HoaiMyNeural">Nữ miền Nam (giọng gần đúng)</option>
+        </select><br>
+
+        <label>Tốc độ:</label><br>
+        <input type="range" name="rate" min="-50%" max="50%" value="0%" 
+        oninput="rateValue.innerText=this.value">
+        <span id="rateValue">0%</span><br>
+
+        <button type="submit">🔊 Tạo giọng nói</button>
+    </form>
+
+    <audio id="player" controls style="display:none;"></audio>
+
+    <a id="download" href="#">⬇️ Tải file</a>
+</div>
+
+<script>
+document.getElementById("ttsForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    let formData = new FormData(this);
+
+    let res = await fetch("/tts", {
+        method: "POST",
+        body: formData
+    });
+
+    let data = await res.json();
+
+    let audioUrl = "/" + data.audio;
+
+    let player = document.getElementById("player");
+    player.src = audioUrl;
+    player.style.display = "block";
+    player.play();
+
+    let download = document.getElementById("download");
+    download.href = "/download/" + data.audio;
+    download.style.display = "block";
+});
+</script>
+
+</body>
+</html>
