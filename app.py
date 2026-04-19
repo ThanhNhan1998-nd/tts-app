@@ -28,7 +28,8 @@ def tts():
     asyncio.run(generate_tts(text, voice, rate, filename))
 
     return jsonify({
-        "audio": filename
+    "audio": filename.replace("\\", "/")
+})
     })
 
 @app.route("/audio/<path:filename>")

@@ -97,7 +97,8 @@ document.getElementById("ttsForm").addEventListener("submit", async function(e){
 
     let data = await res.json();
 
-    let audioUrl = "/" + data.audio;
+    let fileName = data.audio.split("/").pop();
+let audioUrl = "/audio/" + fileName;
 
     let player = document.getElementById("player");
     player.src = audioUrl;
@@ -105,7 +106,7 @@ document.getElementById("ttsForm").addEventListener("submit", async function(e){
     player.play();
 
     let download = document.getElementById("download");
-    download.href = "/download/" + data.audio;
+    download.href = "/download/" + fileName;
     download.style.display = "block";
 });
 </script>
