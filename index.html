@@ -1,96 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TTS AI PRO</title>
+<title>TTS ULTIMATE</title>
 
-    <style>
-        body {
-            font-family: Arial;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: white;
-            text-align: center;
-            padding: 40px;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0a0f1c;
+    color: white;
+}
 
-        .card {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 15px;
-            display: inline-block;
-            width: 80%;
-        }
+.container {
+    width: 55%;
+    margin: auto;
+    margin-top: 40px;
+    background: #111827;
+    padding: 25px;
+    border-radius: 16px;
+}
 
-        textarea {
-            width: 90%;
-            height: 120px;
-            border-radius: 10px;
-            padding: 10px;
-            border: none;
-        }
+textarea {
+    width: 100%;
+    height: 140px;
+    border-radius: 10px;
+    padding: 10px;
+}
 
-        select, input, button {
-            margin: 10px;
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
-        }
+select, input, button {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 8px;
+}
 
-        button {
-            background: #00c6ff;
-            color: white;
-            cursor: pointer;
-        }
+button {
+    width: 100%;
+    background: linear-gradient(90deg,#22c55e,#06b6d4);
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
 
-        button:hover {
-            background: #00aaff;
-        }
+button:hover {
+    opacity: 0.9;
+}
 
-        audio {
-            width: 90%;
-            margin-top: 20px;
-        }
+audio {
+    width: 100%;
+    margin-top: 15px;
+}
 
-        #download {
-            display: none;
-            margin-top: 10px;
-            color: #00ffcc;
-            font-size: 18px;
-        }
-    </style>
+#loading {
+    display: none;
+    color: #38bdf8;
+    margin-top: 10px;
+}
+
+.history {
+    margin-top: 20px;
+    font-size: 13px;
+    color: #94a3b8;
+}
+</style>
+
 </head>
 
 <body>
 
-<h1>🎤 TTS AI PRO</h1>
+<div class="container">
 
-<div class="card">
+<h2>🚀 TTS ULTIMATE</h2>
 
-    <form id="ttsForm">
-        <textarea name="text" placeholder="Nhập văn bản..." required></textarea><br>
+<form id="form">
 
-        <select name="voice">
-            <option value="vi-VN-HoaiMyNeural">Nữ miền Bắc</option>
-            <option value="vi-VN-NamMinhNeural">Nam miền Bắc</option>
-        </select><br>
+<textarea name="text" placeholder="Nhập nội dung..." required></textarea>
 
-        <label>Tốc độ:</label><br>
-        <input type="range" name="rate" min="-50" max="50" value="0"
-               oninput="rateValue.innerText=this.value + '%'">
-        <span id="rateValue">0%</span><br>
+<br>
 
-        <button type="submit">🔊 Tạo giọng nói</button>
-    </form>
+<select name="voice">
+    <option value="female_north">Nữ miền Bắc</option>
+    <option value="male_north">Nam miền Bắc</option>
+</select>
 
-    <audio id="player" controls style="display:none;"></audio>
+<br>
 
-    <br>
-    <a id="download" href="#">⬇️ Tải file</a>
+<label>Tốc độ</label><br>
+<input type="range" name="rate" min="-50" max="50" value="0"
+       oninput="rateText.innerText=this.value + '%'">
+<span id="rateText">0%</span>
+
+<br>
+
+<button type="submit">⚡ Generate AI Voice</button>
+
+</form>
+
+<div id="loading">⏳ AI đang xử lý...</div>
+
+<audio id="audio" controls></audio>
+
+<br>
+
+<a id="download" style="display:none;">⬇️ Download</a>
+
+<div class="history" id="history">
+<h4>📜 History</h4>
+</div>
 
 </div>
 
 <script>
-document.getElementById("ttsForm").addEventListener("submit", async function(e){
+
+async function loadHistory(){
+    let res = await fetch("/history");
+    let data = await res.json();
+
+    let box = document.getElementById("history");
+    box.innerHTML = "<h4>📜 History</h4>";
+
+    data.forEach(item=>{
+        let div = document.createElement("div");
+        div.innerText = "✔ " + item.text;
+        box.appendChild(div);
+    });
+}
+
+document.getElementById("form").addEventListener("submit", async function(e){
     e.preventDefault();
+
+    document.getElementById("loading").style.display = "block";
 
     let formData = new FormData(this);
 
@@ -101,21 +140,29 @@ document.getElementById("ttsForm").addEventListener("submit", async function(e){
 
     let data = await res.json();
 
-    // lấy file name từ backend
-    let fileName = data.audio.split("/").pop();
-    let audioUrl = data.audio;
+    if(data.error){
+        alert(data.error);
+        document.getElementById("loading").style.display = "none";
+        return;
+    }
 
-    // play audio
-    let player = document.getElementById("player");
-    player.src = audioUrl;
-    player.style.display = "block";
-    player.play();
+    let file = data.file;
 
-    // download link
+    let audio = document.getElementById("audio");
+    audio.src = data.audio;
+    audio.play();
+
     let download = document.getElementById("download");
-    download.href = "/download/" + fileName;
-    download.style.display = "inline-block";
+    download.href = "/download/" + file;
+    download.style.display = "block";
+
+    document.getElementById("loading").style.display = "none";
+
+    loadHistory();
 });
+
+loadHistory();
+
 </script>
 
 </body>
