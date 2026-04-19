@@ -1,13 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TTS App</title>
+    <title>TTS AI</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 50px;
+        }
+
+        textarea {
+            width: 80%;
+            height: 120px;
+            border-radius: 10px;
+            padding: 10px;
+            border: none;
+            font-size: 16px;
+        }
+
+        select, button {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #ff7b00;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ff9500;
+        }
+
+        audio {
+            margin-top: 20px;
+            width: 80%;
+        }
+    </style>
 </head>
 <body>
-    <h2>Chuyển văn bản thành giọng nói</h2>
+
+    <h1>🎤 Text to Speech AI</h1>
+
     <form method="POST">
-        <textarea name="text" rows="5" cols="50" placeholder="Nhập nội dung..."></textarea><br><br>
-        <button type="submit">Tạo giọng nói</button>
+        <textarea name="text" placeholder="Nhập văn bản..."></textarea><br>
+
+        <select name="voice">
+            <option value="vi-VN-HoaiMyNeural">Nữ miền Bắc</option>
+            <option value="vi-VN-NamMinhNeural">Nam miền Bắc</option>
+        </select><br>
+
+        <button type="submit">🔊 Tạo giọng nói</button>
     </form>
+
+    {% if request.method == "POST" %}
+        <audio controls autoplay>
+            <source src="output.mp3" type="audio/mpeg">
+        </audio>
+    {% endif %}
+
 </body>
 </html>
